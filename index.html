@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora Marketplace Lojas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-950 text-white">
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold sm:text-3xl">Calculadora de Rateio</h1>
+      <p class="mt-2 text-sm text-slate-300 sm:text-base">
+        Primeiro são descontados todos os custos. O rateio é feito sobre o lucro líquido. Valores estimados.
+      </p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-2xl">
+        <h2 class="mb-5 text-lg font-semibold">Entradas</h2>
+
+        <div class="space-y-5">
+          <div>
+            <label for="lojas" class="mb-2 block text-sm font-medium text-slate-200">Total de lojas</label>
+            <input id="lojas" type="number" min="0" step="1" value="40000" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-400" placeholder="Ex: 40000" />
+          </div>
+
+          <div>
+            <label for="vendasPorLoja" class="mb-2 block text-sm font-medium text-slate-200">Vendas mensal cada loja (R$)</label>
+            <input id="vendasPorLoja" type="number" min="0" step="50" value="3000" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-400" placeholder="Ex: 3000" />
+          </div>
+
+          <div>
+            <label for="taxa" class="mb-2 block text-sm font-medium text-slate-200">Taxa de vendas (%)</label>
+            <input id="taxa" type="number" min="0.01" step="0.01" value="5" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-400" placeholder="Ex: 5" />
+          </div>
+
+          <div>
+            <label for="instanciasAws" class="mb-2 block text-sm font-medium text-slate-200">Instâncias AWS</label>
+            <input id="instanciasAws" type="number" min="1" step="1" value="3" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-400" placeholder="Ex: 3" />
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label for="produtosPorLoja" class="mb-2 block text-sm font-medium text-slate-200">Média de produtos por loja</label>
+              <input id="produtosPorLoja" type="number" min="0" step="1" value="50" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-400" placeholder="Ex: 50" />
+            </div>
+
+            <div>
+              <label for="videosPorProduto" class="mb-2 block text-sm font-medium text-slate-200">Média de vídeos por produto</label>
+              <input id="videosPorProduto" type="number" min="0" step="1" value="1" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-400" placeholder="Ex: 1" />
+            </div>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label for="empresa1" id="empresa1Label" class="mb-2 block text-sm font-medium text-slate-200">Empresa 1 (20%) do líquido</label>
+              <input id="empresa1" type="number" min="0" step="0.01" value="1" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-400" />
+            </div>
+
+            <div>
+              <label for="empresa2" id="empresa2Label" class="mb-2 block text-sm font-medium text-slate-200">Empresa 2 (20%) do líquido</label>
+              <input id="empresa2" type="number" min="0" step="0.01" value="1" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-400" />
+            </div>
+
+            <div>
+              <label for="empresa3" id="empresa3Label" class="mb-2 block text-sm font-medium text-slate-200">Empresa 3 (60%) do líquido</label>
+              <input id="empresa3" type="number" min="0" step="0.01" value="3" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-cyan-400" />
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <button id="calcularBtn" class="rounded-xl bg-cyan-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400" type="button">Calcular</button>
+            <button id="limparBtn" class="rounded-xl border border-slate-700 bg-slate-800 px-5 py-3 font-semibold text-white transition hover:bg-slate-700" type="button">Limpar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-2xl">
+        <div class="mb-5 flex items-center justify-between gap-3">
+          <h2 class="text-lg font-semibold">Resultados</h2>
+          <span id="statusRateio" class="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">Rateio OK</span>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-400">GMV total mensal</p>
+            <p id="gmvTotal" class="mt-2 text-xl font-bold sm:text-2xl">R$ 0,00</p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+            <p class="text-xs uppercase tracking-wide text-slate-400">Lucro bruto</p>
+            <p id="lucroBruto" class="mt-2 text-xl font-bold sm:text-2xl">R$ 0,00</p>
+          </div>
+
+          <div class="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4">
+            <p class="text-xs uppercase tracking-wide text-rose-300">Custos totais</p>
+            <p id="custosTotal" class="mt-2 text-xl font-bold sm:text-2xl">R$ 0,00</p>
+          </div>
+
+          <div class="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+            <p class="text-xs uppercase tracking-wide text-emerald-300">Lucro líquido</p>
+            <p id="lucroLiquido" class="mt-2 text-xl font-bold sm:text-2xl">R$ 0,00</p>
+          </div>
+
+          <div class="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4">
+            <p class="text-xs uppercase tracking-wide text-cyan-300">Empresa 1</p>
+            <p id="empresa1Valor" class="mt-2 text-xl font-bold sm:text-2xl">R$ 0,00</p>
+          </div>
+
+          <div class="rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/5 p-4">
+            <p class="text-xs uppercase tracking-wide text-fuchsia-300">Empresa 2</p>
+            <p id="empresa2Valor" class="mt-2 text-xl font-bold sm:text-2xl">R$ 0,00</p>
+          </div>
+
+          <div class="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 sm:col-span-2">
+            <p class="text-xs uppercase tracking-wide text-amber-300">Empresa 3</p>
+            <p id="empresa3Valor" class="mt-2 text-xl font-bold sm:text-2xl">R$ 0,00</p>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+          <h3 class="mb-3 text-sm font-semibold text-slate-200">Resumo</h3>
+          <div class="space-y-2 text-sm text-slate-300">
+            <p id="resumoLojas">Total de lojas: 0</p>
+            <p id="resumoVendasPorLoja">Vendas mensal por loja: R$ 0,00</p>
+            <p id="resumoTaxa">Taxa de vendas: 0,00%</p>
+            <p id="resumoCatalogo">Catálogo: 0 produtos | 0 vídeos</p>
+            <p id="resumoAws">AWS: R$ 0,00 - R$ 0,00</p>
+            <p id="resumoBunny">Bunny Stream (Encoding + Storage + CDN): R$ 0,00</p>
+            <p id="resumoCustos">Custos totais: R$ 0,00</p>
+            <p id="resumoLiquido">Lucro líquido: R$ 0,00</p>
+            <p id="resumoEmpresa1">Empresa 1: R$ 0,00</p>
+            <p id="resumoEmpresa2">Empresa 2: R$ 0,00</p>
+            <p id="resumoEmpresa3">Empresa 3: R$ 0,00</p>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl border border-indigo-500/30 bg-indigo-500/5 p-4">
+          <h3 class="mb-3 text-sm font-semibold text-indigo-300">Custo AWS estimado</h3>
+          <div class="space-y-2 text-sm text-slate-300">
+            <p id="awsResumo">Estimando...</p>
+            <p id="awsRange">R$ 0,00 - R$ 0,00</p>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl border border-orange-500/30 bg-orange-500/5 p-4">
+          <h3 class="mb-3 text-sm font-semibold text-orange-300">Bunny Stream estimado</h3>
+          <div class="space-y-2 text-sm text-slate-300">
+            <p id="bunnyResumo">Estimando...</p>
+            <p id="bunnyEncoding">Encoding: R$ 0,00</p>
+            <p id="bunnyStorage">Storage Bunny Stream: R$ 0,00</p>
+            <p id="bunnyCdn">CDN Bunny Stream: R$ 0,00</p>
+            <p id="bunnyTotal">Total Bunny Stream: R$ 0,00</p>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+          <h3 class="mb-3 text-sm font-semibold text-slate-200">Verificação</h3>
+          <div id="selfTest" class="space-y-2 text-sm text-slate-300">
+            <p>Teste interno: aguardando...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      var formatter = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+
+      function toNumber(value) {
+        if (value === null || value === undefined) return 0;
+        var normalized = String(value)
+          .trim()
+          .replace(/\s+/g, '')
+          .replace(/\.(?=\d{3}(\D|$))/g, '')
+          .replace(',', '.');
+        var num = Number(normalized);
+        return Number.isFinite(num) ? num : 0;
+      }
+
+      function formatMoney(value) {
+        return formatter.format(Number.isFinite(value) ? value : 0);
+      }
+
+      function formatPercent(value) {
+        var num = Number.isFinite(value) ? value : 0;
+        return num.toFixed(2).replace('.', ',') + '%';
+      }
+
+      function compactPercent(value) {
+        return formatPercent(value).replace(',00%', '%');
+      }
+
+      function setText(id, value) {
+        var el = $(id);
+        if (el) el.textContent = value;
+      }
+
+      function setStatus(ok, text) {
+        var status = $('statusRateio');
+        if (!status) return;
+        status.textContent = text;
+        status.className = ok
+          ? 'rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300'
+          : 'rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-xs font-medium text-red-300';
+      }
+
+      function realToLiquidPct(realPct, taxaPct) {
+        if (!Number.isFinite(realPct) || !Number.isFinite(taxaPct) || taxaPct <= 0) return 0;
+        return (realPct / taxaPct) * 100;
+      }
+
+      function calculateScenario(input) {
+        var safe = input || {};
+        var lojas = toNumber(safe.lojas);
+        var vendasPorLoja = toNumber(safe.vendasPorLoja);
+        var taxa = Math.max(0.01, toNumber(safe.taxa));
+        var empresa1Real = toNumber(safe.empresa1Real);
+        var empresa2Real = toNumber(safe.empresa2Real);
+        var empresa3Real = toNumber(safe.empresa3Real);
+
+        var gmvTotal = lojas * vendasPorLoja;
+        var lucroBruto = gmvTotal * (taxa / 100);
+        var empresa1Pct = realToLiquidPct(empresa1Real, taxa);
+        var empresa2Pct = realToLiquidPct(empresa2Real, taxa);
+        var empresa3Pct = realToLiquidPct(empresa3Real, taxa);
+
+        return {
+          gmvTotal: gmvTotal,
+          lucroBruto: lucroBruto,
+          empresa1Real: empresa1Real,
+          empresa2Real: empresa2Real,
+          empresa3Real: empresa3Real,
+          empresa1Pct: empresa1Pct,
+          empresa2Pct: empresa2Pct,
+          empresa3Pct: empresa3Pct,
+          somaRateio: empresa1Pct + empresa2Pct + empresa3Pct
+        };
+      }
+
+      function estimateAWS(lojas, instancias) {
+        var totalLojas = toNumber(lojas);
+        var totalInstancias = Math.max(1, Math.floor(toNumber(instancias) || 1));
+
+        if (totalLojas <= 5000) {
+          return {
+            min: 750 + (totalInstancias * 250),
+            max: 950 + (totalInstancias * 350),
+            label: 'Infra mínima'
+          };
+        }
+
+        if (totalLojas <= 40000) {
+          return {
+            min: 4000 + (totalInstancias * 1000),
+            max: 9500 + (totalInstancias * 2500),
+            label: 'Infra média'
+          };
+        }
+
+        return {
+          min: 18000 + (totalInstancias * 4000),
+          max: 54000 + (totalInstancias * 12000),
+          label: 'Infra alta'
+        };
+      }
+
+      function estimateBunny(lojas, produtosPorLoja, videosPorProduto) {
+        var usdToBrl = 5.0815;
+        var bunnyEncodingPerGbUsd = 0;
+        var bunnyStoragePerGbUsd = 0.01;
+        var bunnyCdnPerGbUsd = 0.005;
+        var totalProdutos = toNumber(lojas) * toNumber(produtosPorLoja);
+        var totalVideos = totalProdutos * toNumber(videosPorProduto);
+        var gbStorageEstimado = totalVideos;
+        var gbCdnEstimado = totalVideos;
+        var bunnyEncodingBrl = gbStorageEstimado * bunnyEncodingPerGbUsd * usdToBrl;
+        var bunnyStorageBrl = gbStorageEstimado * bunnyStoragePerGbUsd * usdToBrl;
+        var bunnyCdnBrl = gbCdnEstimado * bunnyCdnPerGbUsd * usdToBrl;
+        var totalBrl = bunnyEncodingBrl + bunnyStorageBrl + bunnyCdnBrl;
+
+        return {
+          totalProdutos: totalProdutos,
+          totalVideos: totalVideos,
+          gbStorageEstimado: gbStorageEstimado,
+          gbCdnEstimado: gbCdnEstimado,
+          bunnyEncodingBrl: bunnyEncodingBrl,
+          bunnyStorageBrl: bunnyStorageBrl,
+          bunnyCdnBrl: bunnyCdnBrl,
+          totalBrl: totalBrl
+        };
+      }
+
+      function updateLabels(result) {
+        setText('empresa1Label', 'Empresa 1 (' + compactPercent(result.empresa1Pct) + ') do líquido');
+        setText('empresa2Label', 'Empresa 2 (' + compactPercent(result.empresa2Pct) + ') do líquido');
+        setText('empresa3Label', 'Empresa 3 (' + compactPercent(result.empresa3Pct) + ') do líquido');
+      }
+
+      function calcular() {
+        var input = {
+          lojas: toNumber($('lojas') ? $('lojas').value : 0),
+          vendasPorLoja: toNumber($('vendasPorLoja') ? $('vendasPorLoja').value : 0),
+          taxa: Math.max(0.01, toNumber($('taxa') ? $('taxa').value : 5)),
+          instanciasAws: Math.max(1, Math.floor(toNumber($('instanciasAws') ? $('instanciasAws').value : 1) || 1)),
+          empresa1Real: toNumber($('empresa1') ? $('empresa1').value : 0),
+          empresa2Real: toNumber($('empresa2') ? $('empresa2').value : 0),
+          empresa3Real: toNumber($('empresa3') ? $('empresa3').value : 0),
+          produtosPorLoja: toNumber($('produtosPorLoja') ? $('produtosPorLoja').value : 0),
+          videosPorProduto: toNumber($('videosPorProduto') ? $('videosPorProduto').value : 0)
+        };
+
+        if ($('taxa')) $('taxa').value = String(input.taxa);
+        if ($('instanciasAws')) $('instanciasAws').value = String(input.instanciasAws);
+
+        var result = calculateScenario(input);
+        var aws = estimateAWS(input.lojas, input.instanciasAws);
+        var bunny = estimateBunny(input.lojas, input.produtosPorLoja, input.videosPorProduto);
+
+        var custosMin = aws.min + bunny.totalBrl;
+        var custosMax = aws.max + bunny.totalBrl;
+        var lucroLiquidoMin = result.lucroBruto - custosMax;
+        var lucroLiquidoMax = result.lucroBruto - custosMin;
+
+        var empresa1ValorMin = lucroLiquidoMin * (result.empresa1Pct / 100);
+        var empresa2ValorMin = lucroLiquidoMin * (result.empresa2Pct / 100);
+        var empresa3ValorMin = lucroLiquidoMin * (result.empresa3Pct / 100);
+        var empresa1ValorMax = lucroLiquidoMax * (result.empresa1Pct / 100);
+        var empresa2ValorMax = lucroLiquidoMax * (result.empresa2Pct / 100);
+        var empresa3ValorMax = lucroLiquidoMax * (result.empresa3Pct / 100);
+
+        updateLabels(result);
+
+        setText('gmvTotal', formatMoney(result.gmvTotal));
+        setText('lucroBruto', formatMoney(result.lucroBruto));
+        var custosMedio = (custosMin + custosMax) / 2;
+        setText('custosTotal', formatMoney(custosMedio));
+        var lucroLiquidoMedio = (lucroLiquidoMin + lucroLiquidoMax) / 2;
+        setText('lucroLiquido', formatMoney(lucroLiquidoMedio));
+        var empresa1ValorMedio = (empresa1ValorMin + empresa1ValorMax) / 2;
+        setText('empresa1Valor', formatMoney(empresa1ValorMedio));
+        var empresa2ValorMedio = (empresa2ValorMin + empresa2ValorMax) / 2;
+        setText('empresa2Valor', formatMoney(empresa2ValorMedio));
+        var empresa3ValorMedio = (empresa3ValorMin + empresa3ValorMax) / 2;
+        setText('empresa3Valor', formatMoney(empresa3ValorMedio));
+
+        setText('resumoLojas', 'Total de lojas: ' + input.lojas.toLocaleString('pt-BR') + ' | Instâncias AWS: ' + input.instanciasAws.toLocaleString('pt-BR'));
+        setText('resumoVendasPorLoja', 'Vendas mensal por loja: ' + formatMoney(input.vendasPorLoja));
+        setText('resumoTaxa', 'Taxa de vendas: ' + formatPercent(input.taxa));
+        setText('resumoCatalogo', 'Catálogo: ' + bunny.totalProdutos.toLocaleString('pt-BR') + ' produtos | ' + bunny.totalVideos.toLocaleString('pt-BR') + ' vídeos');
+        setText('resumoAws', 'AWS: ' + formatMoney((aws.min + aws.max)/2));
+        setText('resumoBunny', 'Bunny Stream (Encoding + Storage + CDN): ' + formatMoney(bunny.totalBrl));
+        setText('resumoCustos', 'Custos totais: ' + formatMoney(custosMedio));
+        setText('resumoLiquido', 'Lucro líquido: ' + formatMoney(lucroLiquidoMedio));
+        setText('resumoEmpresa1', 'Empresa 1: ' + formatMoney(empresa1ValorMedio));
+        setText('resumoEmpresa2', 'Empresa 2: ' + formatMoney(empresa2ValorMedio));
+        setText('resumoEmpresa3', 'Empresa 3: ' + formatMoney(empresa3ValorMedio));
+
+        setText('awsResumo', aws.label);
+        setText('awsRange', formatMoney((aws.min + aws.max)/2));
+        setText('bunnyResumo', 'Estimativa mensal (base: 1 video = 1 GB armazenado e 1 GB entregue)');
+        setText('bunnyEncoding', 'Encoding (FREE): ' + formatMoney(bunny.bunnyEncodingBrl));
+        setText('bunnyStorage', 'Storage Bunny Stream ($0.01/GB): ' + formatMoney(bunny.bunnyStorageBrl));
+        setText('bunnyCdn', 'CDN Bunny Stream ($0.005/GB): ' + formatMoney(bunny.bunnyCdnBrl));
+        setText('bunnyTotal', 'Total Bunny Stream: ' + formatMoney(bunny.totalBrl));
+
+        if (Math.abs(result.somaRateio - 100) > 0.001) {
+          setStatus(false, 'Rateio inválido: ' + result.somaRateio.toFixed(2).replace('.', ',') + '%');
+        } else {
+          setStatus(true, 'Rateio OK');
+        }
+      }
+
+      function limpar() {
+        if ($('lojas')) $('lojas').value = '40000';
+        if ($('vendasPorLoja')) $('vendasPorLoja').value = '3000';
+        if ($('taxa')) $('taxa').value = '5';
+        if ($('instanciasAws')) $('instanciasAws').value = '3';
+        if ($('produtosPorLoja')) $('produtosPorLoja').value = '50';
+        if ($('videosPorProduto')) $('videosPorProduto').value = '1';
+        if ($('empresa1')) $('empresa1').value = '1';
+        if ($('empresa2')) $('empresa2').value = '1';
+        if ($('empresa3')) $('empresa3').value = '3';
+        calcular();
+      }
+
+      function bindEvents() {
+        var ids = ['lojas', 'vendasPorLoja', 'taxa', 'instanciasAws', 'produtosPorLoja', 'videosPorProduto', 'empresa1', 'empresa2', 'empresa3'];
+        for (var i = 0; i < ids.length; i++) {
+          var el = $(ids[i]);
+          if (el) {
+            el.addEventListener('input', calcular);
+            el.addEventListener('change', calcular);
+          }
+        }
+
+        if ($('calcularBtn')) $('calcularBtn').addEventListener('click', calcular);
+        if ($('limparBtn')) $('limparBtn').addEventListener('click', limpar);
+      }
+
+      function runSelfTests() {
+        var tests = [
+          {
+            name: 'Cenário base 40k lojas',
+            input: { lojas: 40000, vendasPorLoja: 3000, taxa: 5, empresa1Real: 1, empresa2Real: 1, empresa3Real: 3 },
+            expected: { gmvTotal: 120000000, lucroBruto: 6000000, empresa1Pct: 20, empresa2Pct: 20, empresa3Pct: 60, somaRateio: 100 }
+          },
+          {
+            name: 'Cenário simples 1 loja',
+            input: { lojas: 1, vendasPorLoja: 3000, taxa: 5, empresa1Real: 1, empresa2Real: 1, empresa3Real: 3 },
+            expected: { gmvTotal: 3000, lucroBruto: 150, empresa1Pct: 20, empresa2Pct: 20, empresa3Pct: 60, somaRateio: 100 }
+          },
+          {
+            name: 'Instâncias mínimas travadas em 1',
+            input: { lojas: 1000, instanciasAws: 0 },
+            expectedAws: { min: 1000, max: 1300 }
+          },
+          {
+            name: 'Catálogo base 40k lojas',
+            input: { lojas: 40000, produtosPorLoja: 50, videosPorProduto: 1 },
+            expectedBunny: { totalProdutos: 2000000, totalVideos: 2000000 }
+          },
+          {
+            name: 'Lucro líquido fecha conta',
+            input: { lojas: 1, vendasPorLoja: 3000, taxa: 5, instanciasAws: 1, produtosPorLoja: 1, videosPorProduto: 1, empresa1Real: 1, empresa2Real: 1, empresa3Real: 3 },
+            expectedProfitCheck: true
+          },
+          {
+            name: 'Taxa mínima evita divisão por zero',
+            input: { lojas: 10, vendasPorLoja: 1000, taxa: 0, empresa1Real: 1, empresa2Real: 1, empresa3Real: 3 },
+            expected: { gmvTotal: 10000, lucroBruto: 100, empresa1Pct: 100, empresa2Pct: 100, empresa3Pct: 300, somaRateio: 500 }
+          }
+        ];
+
+        var lines = [];
+
+        for (var i = 0; i < tests.length; i++) {
+          var t = tests[i];
+          var ok = true;
+
+          if (t.expected) {
+            var r = calculateScenario(t.input);
+            ok =
+              r.gmvTotal === t.expected.gmvTotal &&
+              r.lucroBruto === t.expected.lucroBruto &&
+              r.empresa1Pct === t.expected.empresa1Pct &&
+              r.empresa2Pct === t.expected.empresa2Pct &&
+              r.empresa3Pct === t.expected.empresa3Pct &&
+              r.somaRateio === t.expected.somaRateio;
+          }
+
+          if (t.expectedAws) {
+            var aws = estimateAWS(t.input.lojas, Math.max(1, Math.floor(toNumber(t.input.instanciasAws) || 1)));
+            ok = aws.min === t.expectedAws.min && aws.max === t.expectedAws.max;
+          }
+
+          if (t.expectedBunny) {
+            var bunny = estimateBunny(t.input.lojas, t.input.produtosPorLoja, t.input.videosPorProduto);
+            ok = bunny.totalProdutos === t.expectedBunny.totalProdutos && bunny.totalVideos === t.expectedBunny.totalVideos;
+          }
+
+          if (t.expectedProfitCheck) {
+            var r2 = calculateScenario(t.input);
+            var aws2 = estimateAWS(t.input.lojas, t.input.instanciasAws);
+            var bunny2 = estimateBunny(t.input.lojas, t.input.produtosPorLoja, t.input.videosPorProduto);
+            var custosMin = aws2.min + bunny2.totalBrl;
+            var custosMax = aws2.max + bunny2.totalBrl;
+            var lucroLiquidoMin = r2.lucroBruto - custosMax;
+            var lucroLiquidoMax = r2.lucroBruto - custosMin;
+            ok = lucroLiquidoMin <= lucroLiquidoMax;
+          }
+
+          lines.push('<p>' + (ok ? '✅' : '❌') + ' ' + t.name + '</p>');
+        }
+
+        var box = $('selfTest');
+        if (box) box.innerHTML = lines.join('');
+      }
+
+      bindEvents();
+      calcular();
+      runSelfTests();
+    })();
+  </script>
+</body>
+</html>
