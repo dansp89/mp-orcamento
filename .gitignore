@@ -1,0 +1,6 @@
+package-lock.json
+.env
+.env.local
+
+# salvamento 2026-11-07
+node_modules/
